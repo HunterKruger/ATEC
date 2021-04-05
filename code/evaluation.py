@@ -169,14 +169,15 @@ class BinClsEvaluation(Evaluation):
 
         return best_cutoff, decision_table
 
-    def confusion_matrix(self, cutoff=None, cost_tp=1, cost_tn=0, cost_fp=-0.3, cost_fn=0):
+    def confusion_matrix(self, cutoff=None, plot=True, cost_tp=1, cost_tn=0, cost_fp=-0.3, cost_fn=0):
         """
         Confusion matrix, cost matrix and related metrics.
-        :param cutoff: cut-off threshold of y_pred
+        :param cutoff: cut-off of y_pred
         :param cost_tp: cost of tp
         :param cost_tn: cost of tn
         :param cost_fp: cost of fp
         :param cost_fn: cost of fn
+        :param plot: plot metrics if true
         :return:
         """
         if cutoff is None:
@@ -231,13 +232,18 @@ class BinClsEvaluation(Evaluation):
               str(cost_tn) + ' x ' + str(to_display['tn']) + ' = ' + str(to_display['gain_tn']))
         print('Average gain per record ' + str(np.round(to_display['gain_per_record'], 2)) + ' x ' + str(
             len(self.y_true)) + ' = ' + str(to_display['gain_all']))
-        print('-----------------------------------')
+        print('--------------Metrics--------------')
+        print('Accuracy: '+str(to_display['acc']))
+        print('Precision: '+str(to_display['pcs']))
+        print('Recall: '+str(to_display['rec']))
+        print('F1-score: '+str(to_display['f1']))
+        print('----------------------------------')
 
-
-        ss = pd.Series(data=[to_display['acc'], to_display['pcs'], to_display['rec'], to_display['f1']],
-                       index=['Accuracy', 'Precision', 'Recall', 'F1_score'])
-        sns.barplot(x=ss.values, y=ss.index, orient='h')
-        plt.xlim(0, 1)
+        if plot:
+            ss = pd.Series(data=[to_display['acc'], to_display['pcs'], to_display['rec'], to_display['f1']],
+                           index=['Accuracy', 'Precision', 'Recall', 'F1_score'])
+            sns.barplot(x=ss.values, y=ss.index, orient='h')
+            plt.xlim(0, 1)
 
         if self.return_result:
             return to_display
